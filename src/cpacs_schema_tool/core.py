@@ -10,9 +10,9 @@ import shutil
 import sys
 import tempfile
 from collections import deque
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Iterator, Mapping
 
 from lxml import etree
 
@@ -97,11 +97,17 @@ def parse_schema(path: Path) -> etree._ElementTree:
     return tree
 
 
-def parse_text_as_schema(text: str, source_name: str = "<memory>") -> etree._ElementTree:
+def parse_text_as_schema(
+    text: str, source_name: str = "<memory>"
+) -> etree._ElementTree:
     try:
-        root = etree.fromstring(text.encode("utf-8"), parser=parser(), base_url=source_name)
+        root = etree.fromstring(
+            text.encode("utf-8"), parser=parser(), base_url=source_name
+        )
     except etree.XMLSyntaxError as exc:
-        raise SchemaToolError(f"Generated schema is not well-formed XML: {exc}") from exc
+        raise SchemaToolError(
+            f"Generated schema is not well-formed XML: {exc}"
+        ) from exc
     return etree.ElementTree(root)
 
 
@@ -229,7 +235,10 @@ def sort_top_level(root: etree._Element, policy: SchemaPolicy) -> None:
     declarations_started = False
 
     for child in children:
-        if is_comment(child) and normalized_comment_text(child) in policy.generated_section_comments:
+        if (
+            is_comment(child)
+            and normalized_comment_text(child) in policy.generated_section_comments
+        ):
             continue
         lname = local_name(child)
         is_global = (
@@ -240,7 +249,11 @@ def sort_top_level(root: etree._Element, policy: SchemaPolicy) -> None:
         if is_comment(child) or lname is None:
             pending.append(child)
             continue
-        if not declarations_started and namespace_uri(child) == XSD_NS and lname in PRELUDE_TAGS:
+        if (
+            not declarations_started
+            and namespace_uri(child) == XSD_NS
+            and lname in PRELUDE_TAGS
+        ):
             prelude.extend(pending)
             pending.clear()
             prelude.append(child)
@@ -279,13 +292,13 @@ def normalize_whitespace(root: etree._Element, policy: SchemaPolicy) -> None:
     children = list(root)
     for index, child in enumerate(children):
         child.tail = (
-            "\n"
-            if index == len(children) - 1
-            else "\n\n" + " " * policy.indent_size
+            "\n" if index == len(children) - 1 else "\n\n" + " " * policy.indent_size
         )
 
 
-def formatted_tree(tree: etree._ElementTree, policy: SchemaPolicy) -> etree._ElementTree:
+def formatted_tree(
+    tree: etree._ElementTree, policy: SchemaPolicy
+) -> etree._ElementTree:
     result = clone_tree(tree)
     root = result.getroot()
     arrange_attributes(root, policy)
@@ -331,7 +344,9 @@ def validate_generated_text(text: str, source_name: str) -> None:
     errors = validate_schema(parse_text_as_schema(text, source_name))
     if errors:
         details = "\n".join(str(item) for item in errors[:20])
-        raise SchemaToolError("Generated output does not compile as XML Schema:\n" + details)
+        raise SchemaToolError(
+            "Generated output does not compile as XML Schema:\n" + details
+        )
 
 
 def resolve_output_target(
@@ -493,7 +508,9 @@ def iter_qname_references(
         if substitution_group:
             uri, name, _prefix = resolve_lexical_qname(substitution_group, node)
             if uri != XSD_NS and is_local_component_reference(uri, schema_root):
-                yield ComponentKey("element", name), node, "substitutionGroup", substitution_group
+                yield ComponentKey(
+                    "element", name
+                ), node, "substitutionGroup", substitution_group
 
 
 def reachable_components(
@@ -513,7 +530,9 @@ def reachable_components(
             unresolved.append((key, root, "root", key.name))
             continue
         reachable.add(key)
-        for dependency, node, attribute, lexical_value in iter_qname_references(component, root):
+        for dependency, node, attribute, lexical_value in iter_qname_references(
+            component, root
+        ):
             if dependency not in components:
                 unresolved.append((dependency, node, attribute, lexical_value))
             elif dependency not in reachable:
@@ -591,7 +610,9 @@ def lint_schema(
                 default_severity="error",
             )
 
-    type_components = {key: node for key, node in components.items() if key.kind == "type"}
+    type_components = {
+        key: node for key, node in components.items() if key.kind == "type"
+    }
     final_names: dict[str, list[str]] = {}
     for key, node in type_components.items():
         expected = normalized_type_name(key.name, policy)
@@ -636,7 +657,9 @@ def lint_schema(
 
     seen_unresolved: set[tuple[ComponentKey, int | None, str, str]] = set()
     for component in components.values():
-        for key, node, attribute, lexical_value in iter_qname_references(component, root):
+        for key, node, attribute, lexical_value in iter_qname_references(
+            component, root
+        ):
             if key in components:
                 continue
             marker = (key, node.sourceline, attribute, lexical_value)
@@ -803,7 +826,9 @@ def check_schema_file(
     if original == formatted:
         print("Schema formatting OK. The schema is in canonical form.")
         return 0
-    print("Schema formatting differs from the canonical representation.", file=sys.stderr)
+    print(
+        "Schema formatting differs from the canonical representation.", file=sys.stderr
+    )
     print("Run the format command and review the changes.", file=sys.stderr)
     diff = difflib.unified_diff(
         original.splitlines(),

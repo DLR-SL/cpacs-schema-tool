@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import copy
 import json
+from collections.abc import Mapping, MutableMapping, Sequence
 from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
-from typing import Any, Mapping, MutableMapping, Sequence
-
+from typing import Any
 
 try:
     import tomllib
@@ -17,7 +17,9 @@ except ModuleNotFoundError:  # Python 3.10
 
 
 ALLOWED_SEVERITIES = frozenset({"error", "warning", "info"})
-DEFAULT_POLICY_RESOURCE = files("cpacs_schema_tool.resources").joinpath("schema_rules.toml")
+DEFAULT_POLICY_RESOURCE = files("cpacs_schema_tool.resources").joinpath(
+    "schema_rules.toml"
+)
 
 
 class PolicyError(RuntimeError):
@@ -100,8 +102,14 @@ def _toml_dumps(raw: Mapping[str, Any]) -> str:
     lines: list[str] = []
 
     def emit_table(table: Mapping[str, Any], path: tuple[str, ...]) -> None:
-        scalar_items = [(key, value) for key, value in table.items() if not isinstance(value, Mapping)]
-        child_items = [(key, value) for key, value in table.items() if isinstance(value, Mapping)]
+        scalar_items = [
+            (key, value)
+            for key, value in table.items()
+            if not isinstance(value, Mapping)
+        ]
+        child_items = [
+            (key, value) for key, value in table.items() if isinstance(value, Mapping)
+        ]
         if path:
             if lines and lines[-1] != "":
                 lines.append("")
@@ -111,8 +119,12 @@ def _toml_dumps(raw: Mapping[str, Any]) -> str:
         for key, value in child_items:
             emit_table(value, (*path, str(key)))
 
-    root_scalars = {key: value for key, value in raw.items() if not isinstance(value, Mapping)}
-    root_tables = {key: value for key, value in raw.items() if isinstance(value, Mapping)}
+    root_scalars = {
+        key: value for key, value in raw.items() if not isinstance(value, Mapping)
+    }
+    root_tables = {
+        key: value for key, value in raw.items() if isinstance(value, Mapping)
+    }
     for key, value in root_scalars.items():
         lines.append(f"{key} = {_toml_value(value)}")
     for key, value in root_tables.items():
@@ -212,7 +224,8 @@ def _string_list(value: Any, *, path: str) -> tuple[str, ...]:
         seen.add(item)
     if duplicates:
         raise PolicyError(
-            f"{path} contains duplicate values: " + ", ".join(repr(x) for x in duplicates)
+            f"{path} contains duplicate values: "
+            + ", ".join(repr(x) for x in duplicates)
         )
     return tuple(value)
 
@@ -230,7 +243,11 @@ def _validate(raw: Mapping[str, Any], sources: Sequence[str]) -> SchemaPolicy:
     rename_types = _table(renames, "types", path="renames.types")
 
     indent_size = formatting.get("indent_size")
-    if not isinstance(indent_size, int) or isinstance(indent_size, bool) or indent_size < 1:
+    if (
+        not isinstance(indent_size, int)
+        or isinstance(indent_size, bool)
+        or indent_size < 1
+    ):
         raise PolicyError("format.indent_size must be a positive integer.")
 
     remove_occurs = formatting.get("remove_redundant_occurs_one")
@@ -243,7 +260,9 @@ def _validate(raw: Mapping[str, Any], sources: Sequence[str]) -> SchemaPolicy:
         path="naming.types",
     )
     if first_character not in {"lower", "unchanged"}:
-        raise PolicyError("naming.types.first_character must be 'lower' or 'unchanged'.")
+        raise PolicyError(
+            "naming.types.first_character must be 'lower' or 'unchanged'."
+        )
 
     rule_policies: dict[str, LintRulePolicy] = {}
     for code, value in rules_raw.items():
@@ -291,7 +310,9 @@ def _validate(raw: Mapping[str, Any], sources: Sequence[str]) -> SchemaPolicy:
             path="naming.types",
         ),
         type_exceptions=frozenset(
-            _string_list(naming_types.get("exceptions", []), path="naming.types.exceptions")
+            _string_list(
+                naming_types.get("exceptions", []), path="naming.types.exceptions"
+            )
         ),
         reachability_keep=_string_list(
             reachability.get("keep", []),
@@ -304,7 +325,9 @@ def _validate(raw: Mapping[str, Any], sources: Sequence[str]) -> SchemaPolicy:
     )
 
     if policy.root_type in policy.base_types:
-        raise PolicyError("schema.root_type must not also be listed in format.base_types.")
+        raise PolicyError(
+            "schema.root_type must not also be listed in format.base_types."
+        )
     return policy
 
 
@@ -320,7 +343,9 @@ def load_policy(
     """
 
     if replace_path is not None and override_paths:
-        raise PolicyError("Use either partial --rules overrides or --replace-rules, not both.")
+        raise PolicyError(
+            "Use either partial --rules overrides or --replace-rules, not both."
+        )
 
     if replace_path is not None:
         raw = _read_toml(replace_path)
