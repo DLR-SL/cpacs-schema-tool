@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from . import __version__
 from .core import (
@@ -209,7 +209,9 @@ def build_argument_parser() -> argparse.ArgumentParser:
         prog="cpacs-schema",
         description="Format, check, lint, and explicitly migrate CPACS XSD schemas.",
     )
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     format_parser = subparsers.add_parser(
@@ -233,7 +235,9 @@ def build_argument_parser() -> argparse.ArgumentParser:
         default=200,
         help="Maximum number of unified-diff lines to print (default: 200).",
     )
-    check_parser.add_argument("--no-validate", action="store_true", help="Skip XSD compilation.")
+    check_parser.add_argument(
+        "--no-validate", action="store_true", help="Skip XSD compilation."
+    )
     check_parser.set_defaults(handler=command_check)
 
     lint_parser = subparsers.add_parser(
