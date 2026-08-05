@@ -41,6 +41,15 @@ python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
+Using Conda:
+
+```bash
+conda create -n cpacs-schema -c conda-forge python=3.10 pip git
+conda activate cpacs-schema
+python -m pip install "cpacs-schema-tool @ git+https://github.com/DLR-SL/cpacs-schema-tool.git@v0.1.1"
+cpacs-schema --version
+```
+
 Using Pixi:
 
 ```bash
