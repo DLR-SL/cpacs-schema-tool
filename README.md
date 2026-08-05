@@ -56,21 +56,14 @@ Using Pixi:
 pixi run check
 ```
 
-Until a package release is published, a consumer can pin the Git repository:
+Until the package is published on PyPI, a consumer can pin the released Git tag:
 
 ```toml
 [pypi-dependencies]
 cpacs-schema-tool = {
     git = "https://github.com/DLR-SL/cpacs-schema-tool.git",
-    rev = "<full-commit-sha>"
+    tag = "v0.1.1"
 }
-```
-
-After publishing a release:
-
-```toml
-[pypi-dependencies]
-cpacs-schema-tool = "==0.1.0"
 ```
 
 ## Built-in policy
