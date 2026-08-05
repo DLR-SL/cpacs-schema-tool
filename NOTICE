@@ -1,0 +1,6 @@
+CPACS Schema Tool
+Copyright 2026 Deutsches Zentrum fuer Luft- und Raumfahrt e.V. (DLR)
+
+This project is a package-oriented extraction and further development of the
+schema tool originally maintained in the DLR-SL/CPACS repository under
+scripts/schema_tool.py and scripts/schema_rules.toml.

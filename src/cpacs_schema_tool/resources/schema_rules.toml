@@ -1,0 +1,140 @@
+# Normative policy metadata; versioned independently from the package API.
+[policy]
+name = "CPACS Standard Schema Rules"
+version = "1.0"
+
+
+# Expected CPACS document entry point.
+[schema]
+root_element = "cpacs"
+root_type = "cpacsType"
+
+
+# Canonical, semantics-preserving representation.
+[format]
+indent_size = 4
+remove_redundant_occurs_one = true
+base_types_comment = "==== base types ===="
+custom_types_comment = "==== custom types ===="
+attribute_order = [
+    "name",
+    "ref",
+    "minOccurs",
+    "maxOccurs",
+    "default",
+    "use",
+    "fixed",
+    "type",
+    "base",
+    "itemType",
+    "memberTypes",
+    "substitutionGroup",
+    "refer",
+    "xpath",
+    "value",
+    "nillable",
+    "abstract",
+    "mixed",
+    "form",
+    "block",
+    "final",
+    "id",
+]
+base_types = [
+    "complexBaseType",
+    "stringArrayBaseType",
+    "stringVectorBaseType",
+    "booleanBaseType",
+    "dateBaseType",
+    "dateTimeBaseType",
+    "doubleArrayBaseType",
+    "doubleBaseType",
+    "doubleConstraintBaseType",
+    "doubleVectorBaseType",
+    "doubleVectorConstraintBaseType",
+    "integerBaseType",
+    "posExcl0DoubleBaseType",
+    "posExcl0IntBaseType",
+    "posIntVectorBaseType",
+    "stringBaseType",
+    "stringUIDBaseType",
+    "timeBaseType",
+    "timeConstraintBaseType",
+]
+
+
+# Global type naming convention.
+[naming.types]
+first_character = "lower"
+required_suffix = "Type"
+exceptions = []
+
+
+# Additional public components that are not reachable from the CPACS root.
+[reachability]
+keep = []
+
+
+# Prefix spelling is a CPACS source-code convention.
+[prefixes]
+xsd = "xsd"
+xlink = "xlink"
+
+# Duplicate global component.
+[rules.CPACS001]
+enabled = true
+severity = "error"
+
+# Missing configured root element.
+[rules.CPACS002]
+enabled = true
+severity = "error"
+
+# Root element uses an unexpected type.
+[rules.CPACS003]
+enabled = true
+severity = "error"
+
+# Global type violates the naming convention.
+[rules.CPACS004]
+enabled = true
+severity = "error"
+
+# Type-name normalization collision.
+[rules.CPACS005]
+enabled = true
+severity = "error"
+
+# Configured base type is missing.
+[rules.CPACS006]
+enabled = true
+severity = "warning"
+
+# Redundant minOccurs/maxOccurs="1".
+[rules.CPACS007]
+enabled = true
+severity = "warning"
+
+# Unresolved local component reference.
+[rules.CPACS008]
+enabled = true
+severity = "error"
+
+# Type unreachable from configured roots.
+[rules.CPACS009]
+enabled = true
+severity = "warning"
+
+# Configured XSD prefix has the wrong namespace URI.
+[rules.CPACS010]
+enabled = true
+severity = "error"
+
+# Configured XLink prefix has the wrong namespace URI.
+[rules.CPACS011]
+enabled = true
+severity = "error"
+
+
+# Reviewed, release-specific mappings should normally be supplied via overrides.
+[renames.types]

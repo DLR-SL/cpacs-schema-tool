@@ -1,0 +1,11 @@
+# Partial project-specific override. All unspecified values remain at the
+# built-in CPACS defaults.
+
+[reachability]
+keep_add = ["projectMetadataType"]
+
+[naming.types]
+exceptions_add = ["LegacyProjectType"]
+
+[rules.CPACS009]
+severity = "error"
