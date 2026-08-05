@@ -146,24 +146,6 @@ The effective merged policy can be inspected reproducibly:
 cpacs-schema lint schema.xsd --print-effective-rules
 ```
 
-## Recommended CPACS integration
-
-The CPACS repository no longer needs its own copy of `schema_tool.py` or
-`schema_rules.toml`:
-
-```toml
-[tasks]
-test-schema = "cpacs-schema check schema/cpacs_schema.xsd"
-lint-schema = "cpacs-schema lint schema/cpacs_schema.xsd"
-format-schema = "cpacs-schema format schema/cpacs_schema.xsd --in-place"
-test-examples = "python -m pytest scripts/tests/test_examples.py -v"
-check = { depends-on = ["test-schema", "lint-schema", "test-examples"] }
-```
-
-The CPACS repository retains the actual XSD, its examples, and integration tests.
-The tool repository owns the implementation, standard rules, unit tests, and
-releases.
-
 ## Policy and tool versioning
 
 Consumer repositories should pin a released tool version or full Git commit.
