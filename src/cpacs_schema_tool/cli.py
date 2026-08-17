@@ -75,6 +75,14 @@ def add_write_arguments(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def validate_write_arguments(args: argparse.Namespace) -> None:
+    if args.backup and not (args.in_place or args.output):
+        raise SchemaToolError(
+            "--backup requires --in-place or an output path; "
+            "nothing is written when the result goes to stdout."
+        )
+
+
 def resolve_policy(args: argparse.Namespace) -> SchemaPolicy:
     policy = load_policy(args.rules, replace_path=args.replace_rules)
     if args.print_effective_rules:
@@ -84,6 +92,7 @@ def resolve_policy(args: argparse.Namespace) -> SchemaPolicy:
 
 
 def command_format(args: argparse.Namespace, policy: SchemaPolicy) -> int:
+    validate_write_arguments(args)
     format_schema_file(
         Path(args.schema),
         policy,

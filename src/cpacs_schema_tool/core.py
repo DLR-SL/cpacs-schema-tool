@@ -417,6 +417,11 @@ def output_schema_text(
 ) -> None:
     target = resolve_output_target(input_path, output, in_place)
     if target is None:
+        if backup:
+            raise SchemaToolError(
+                "--backup requires --in-place or an output path; "
+                "nothing is written when the result goes to stdout."
+            )
         if validate:
             validate_generated_text(text, str(input_path))
         sys.stdout.write(text)
