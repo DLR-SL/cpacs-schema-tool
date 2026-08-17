@@ -395,6 +395,10 @@ def write_atomic(
             backup_path = target.with_suffix(target.suffix + ".bak")
             shutil.copy2(target, backup_path)
             print(f"Created backup: {backup_path}")
+        try:
+            shutil.copymode(target, temp_path)
+        except FileNotFoundError:
+            temp_path.chmod(0o644)
         os.replace(temp_path, target)
     finally:
         if temp_path.exists():
